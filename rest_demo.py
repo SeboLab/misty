@@ -8,7 +8,7 @@ import json
 ip = "192.168.1.120"
 url = "http://" + ip + "/api"
 
-print(requests.post(url + "/text/display", json=json.dumps(params = {"Text": "Hello, world!", "Layer": "MyTextLayer"})).json())
+print(requests.post(url + "/text/display", json=json.dumps({"Text": "Hello, world!", "Layer": "MyTextLayer"})).json())
     
 print(requests.post(url + "/led", json='{ "red":0,"green":0,"blue":255 }').json())
 
@@ -24,8 +24,12 @@ with open('speak', 'r') as file:
 
 print(requests.post(url + "/services/camera/enable").json())
 
+print(requests.get(url + "/cameras/rgb", json=json.dumps({"Base64": True, "FileName": "pic", "Width": 600, "Height": 800, "DisplayOnScreen": True, "OverwriteExisting": True})).json())
+
 
 # Websocket example
+uri = "ws://" + ip + "/pubsub"
+
 subscribe_msg = {
   "Operation": "subscribe", 
   "Type": "TimeOfFlight",
@@ -41,16 +45,18 @@ import asyncio
 import websockets
 
 async def hello():
-    uri = "ws://" + ip + "/pubsub"
+    
     async with websockets.connect(uri) as websocket:
         await websocket.send(subscribe_msg)
 
         while True:
             
-            msg = await websocket.recv()
-            callback(msg)
+            msg = json.loads(await websocket.recv())
 
-async def callback(msgs):
+            if msg["eventName"] == "FrontCenterTimeOfFlight":
+                callback(msg)
+
+def callback(msg):
     print(msg)
 
 asyncio.get_event_loop().run_until_complete(hello())
