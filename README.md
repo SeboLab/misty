@@ -9,8 +9,9 @@
 * [REST API](https://docs.mistyrobotics.com/misty-ii/rest-api/overview/)
   * Usage examples in `rest_demo.py`
   * [API command documentation](https://docs.mistyrobotics.com/misty-ii/rest-api/api-reference)
-    * Send POST and GET requests to send commands to Misty. 
+    * Send POST and GET requests to send commands to Misty.
   * [Websocket documentation](https://docs.mistyrobotics.com/misty-ii/rest-api/overview/#getting-live-data-from-misty)
     * For the websocket, use the URI `"ws://" + ip + "/pubsub"`
     * I used a Python library called [`websockets`](https://websockets.readthedocs.io/en/stable/intro.html#that-s-all)
     * Example in `/websocket_example`
+* Use this [library](https://github.com/MistyCommunity/Wrapper-Python) that converts Python functions to REST calls

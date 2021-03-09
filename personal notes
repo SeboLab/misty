@@ -1,4 +1,7 @@
 Misty IP: 192.168.1.120
 
+rostopic pub /misty/command/driveContinously std_msgs/Int32MultiArray '{layout: {dim: []}, data: [0, 0]}'
+
+
 The audio service worked at first, but it stopped working
 The camera service also doesn't work, even after sending the command to enable it
