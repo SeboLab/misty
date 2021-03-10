@@ -30,7 +30,7 @@ class Core:
     def drive_time(self, params):
         r.driveTime(params.linear_velocity, params.angular_velocity, params.time)
 
-    
+
 
 if __name__ == '__main__':
     Core(sys.argv[1])
