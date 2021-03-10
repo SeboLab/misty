@@ -15,3 +15,9 @@
     * I used a Python library called [`websockets`](https://websockets.readthedocs.io/en/stable/intro.html#that-s-all)
     * Example in `/websocket_example`
 * Use this [library](https://github.com/MistyCommunity/Wrapper-Python) that converts Python functions to REST calls
+
+## ROS API
+* `cd path/to/catkin/ws`
+* `source devel/setup.bash`
+* `roscore`
+* `rosrun misty_ros core.py 192.168.1.120`

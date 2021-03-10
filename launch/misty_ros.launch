@@ -1,0 +1,3 @@
+<launch>
+	<node name="misty_ros" pkg="misty_ros" type="core.py" args="$(arg ip)" output="screen"/>
+</launch>
