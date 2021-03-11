@@ -21,3 +21,6 @@
 * `source devel/setup.bash`
 * `roscore`
 * `rosrun misty_ros core.py 192.168.1.120`
+
+## ROS Topics
+`/drive`: Receives a `Float32` for the velocity and a `Float32` for the angular velocity, given in degrees/second
