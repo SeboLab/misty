@@ -5,6 +5,7 @@
 import asyncio
 import websockets
 
+
 async def hello(websocket, path):
     while True:
         num = await websocket.recv()
@@ -12,9 +13,8 @@ async def hello(websocket, path):
 
         await websocket.send(str(int(num) + 1))
 
+
 start_server = websockets.serve(hello, "localhost", 8765)
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
-
-

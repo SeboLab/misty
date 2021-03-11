@@ -5,6 +5,7 @@
 import asyncio
 import websockets
 
+
 async def hello():
     uri = "ws://localhost:8765"
     async with websockets.connect(uri) as websocket:
@@ -16,6 +17,6 @@ async def hello():
             num = await websocket.recv()
             print(f"< {num}")
             num = int(num)
-       
+
 
 asyncio.get_event_loop().run_until_complete(hello())

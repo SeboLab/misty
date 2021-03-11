@@ -16,11 +16,11 @@
     * Example in `/websocket_example`
 * Use this [library](https://github.com/MistyCommunity/Wrapper-Python) that converts Python functions to REST calls
 
-## ROS API
-* `cd path/to/catkin/ws`
-* `source devel/setup.bash`
-* `roscore`
-* `rosrun misty_ros core.py 192.168.1.120`
+## Usage
+
+```
+roslaunch launch/misty_ros.launch ip:=<robot ip>
+```
 
 ## ROS Topics
 `/drive`: Receives a `Float32` for the velocity and a `Float32` for the angular velocity, given in degrees/second

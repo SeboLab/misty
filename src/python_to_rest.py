@@ -1,4 +1,5 @@
 # /**********************************************************************
+#   Modifications Copyright 2021 Sebo Lab
 # 	Copyright 2020 Misty Robotics
 # 	Licensed under the Apache License, Version 2.0 (the "License");
 # 	you may not use this file except in compliance with the License.
@@ -47,7 +48,6 @@ from random import *
 
 
 class Robot:
-
     def __init__(self, ip):
         self.ip = ip
 
@@ -59,58 +59,99 @@ class Robot:
         self.time_of_flight_instance = [None] * 4
         self.face_recognition_instance = None
 
-        self.available_subscriptions = ["SerialMessage", "TimeOfFlight", "FaceRecognition", "LocomotionCommand",
-                                        "HaltCommand", "SelfState", "WorldState"]
+        self.available_subscriptions = [
+            "SerialMessage",
+            "TimeOfFlight",
+            "FaceRecognition",
+            "LocomotionCommand",
+            "HaltCommand",
+            "SelfState",
+            "WorldState",
+        ]
 
         self.populateImages()
         self.populateAudio()
         self.populateLearnedFaces()
 
     def changeLED(self, red, green, blue):
-        assert red in range(0, 256) and blue in range(0, 256) and green in range(0,
-                                                                                 256), " changeLED: The colors need to be in 0-255 range"
-        requests.post('http://' + self.ip + '/api/led', json={"red": red, "green": green, "blue": blue})
+        assert (
+            red in range(0, 256) and blue in range(0, 256) and green in range(0, 256)
+        ), " changeLED: The colors need to be in 0-255 range"
+        requests.post(
+            "http://" + self.ip + "/api/led",
+            json={"red": red, "green": green, "blue": blue},
+        )
 
     def changeImage(self, image_name, timeout=5):
         if image_name in self.images_saved:
-            requests.post('http://' + self.ip + '/api/images/display',
-                          json={'FileName': image_name, 'TimeOutSeconds': 5, 'Alpha': 1})
+            requests.post(
+                "http://" + self.ip + "/api/images/display",
+                json={"FileName": image_name, "TimeOutSeconds": 5, "Alpha": 1},
+            )
         else:
-            print(image_name,
-                  "not found on the robot, use <robot_name>.printImageList() to see the list of saved images")
+            print(
+                image_name,
+                "not found on the robot, use <robot_name>.printImageList() to see the list of saved images",
+            )
 
     def playAudio(self, file_name):
         if file_name in self.audio_saved:
-            requests.post('http://' + self.ip + '/api/audio/play', json={"AssetId": file_name})
+            requests.post(
+                "http://" + self.ip + "/api/audio/play", json={"AssetId": file_name}
+            )
         else:
-            print(file_name,
-                  "not found on the robot, use <robot_name>.printAudioList() to see the list of saved audio files")
+            print(
+                file_name,
+                "not found on the robot, use <robot_name>.printAudioList() to see the list of saved audio files",
+            )
 
     def uploadAudio(self, file_name, apply=False, overwrite=False):
-        url = 'http://' + self.ip + '/api/audio'
-        with open(file_name, 'rb') as f:
-            encoded_string = base64.b64encode(f.read()).decode('ascii')
-            data = {"FileName": file_name, "Data": encoded_string, "ImmediatelyApply": apply,
-                    "OverwriteExisting": overwrite}
+        url = "http://" + self.ip + "/api/audio"
+        with open(file_name, "rb") as f:
+            encoded_string = base64.b64encode(f.read()).decode("ascii")
+            data = {
+                "FileName": file_name,
+                "Data": encoded_string,
+                "ImmediatelyApply": apply,
+                "OverwriteExisting": overwrite,
+            }
             requests.post(url, json=data)
 
     def battery(self):
-        resp = requests.get('http://' + self.ip + '/api/battery')
+        resp = requests.get("http://" + self.ip + "/api/battery")
         for reply in resp.json():
-            return (reply['result'])
+            return reply["result"]
 
     def moveHead(self, roll, pitch, yaw, velocity=10, units="degrees"):
-        if (units == "position"):
-            assert -5.0 <= roll <= 5.0 and -5.0 <= pitch <= 5.0 and -5.0 <= yaw <= 5.0, " moveHead: Roll, Pitch and Yaw needs to be in range -5 to +5"
-        elif (units == "radians"):
-            assert -.75 <= roll <= .75 and -.1662 <= pitch <= .6094 and -1.57 <= yaw <= 1.57, " moveHead: invalid positioning"
+        if units == "position":
+            assert (
+                -5.0 <= roll <= 5.0 and -5.0 <= pitch <= 5.0 and -5.0 <= yaw <= 5.0
+            ), " moveHead: Roll, Pitch and Yaw needs to be in range -5 to +5"
+        elif units == "radians":
+            assert (
+                -0.75 <= roll <= 0.75
+                and -0.1662 <= pitch <= 0.6094
+                and -1.57 <= yaw <= 1.57
+            ), " moveHead: invalid positioning"
         else:
             units = "degrees"
-            assert -9.5 <= pitch <= 34.9 and -43 <= roll <= 43 and -90 <= yaw <= 90, " moveHead: invalid positioning"
+            assert (
+                -9.5 <= pitch <= 34.9 and -43 <= roll <= 43 and -90 <= yaw <= 90
+            ), " moveHead: invalid positioning"
 
-        assert 0.0 <= velocity <= 100.0, " moveHead: Velocity needs to be in range 0 to 100"
-        requests.post('http://' + self.ip + '/api/head',
-                      json={"Pitch": pitch, "Roll": roll, "Yaw": yaw, "Velocity": velocity, "Units": units})
+        assert (
+            0.0 <= velocity <= 100.0
+        ), " moveHead: Velocity needs to be in range 0 to 100"
+        requests.post(
+            "http://" + self.ip + "/api/head",
+            json={
+                "Pitch": pitch,
+                "Roll": roll,
+                "Yaw": yaw,
+                "Velocity": velocity,
+                "Units": units,
+            },
+        )
 
     def moveHeadPosition(self, pitch, roll, yaw, velocity):
         self.moveHead(pitch, roll, yaw, velocity, "position")
@@ -122,41 +163,70 @@ class Robot:
         self.moveHead(pitch, roll, yaw, velocity, "degrees")
 
     def drive(self, linear_velocity, angular_velocity):
-        assert -100 <= linear_velocity <= 100 and -100 <= angular_velocity <= 100, " drive: The velocities needs to be in the range -100 to 100"
-        requests.post('http://' + self.ip + '/api/drive',
-                      json={"LinearVelocity": linear_velocity, "AngularVelocity": angular_velocity})
+        assert (
+            -100 <= linear_velocity <= 100 and -100 <= angular_velocity <= 100
+        ), " drive: The velocities needs to be in the range -100 to 100"
+        requests.post(
+            "http://" + self.ip + "/api/drive",
+            json={
+                "LinearVelocity": linear_velocity,
+                "AngularVelocity": angular_velocity,
+            },
+        )
 
     def driveTime(self, linear_velocity, angular_velocity, time_in_milli_second):
-        assert -100 <= linear_velocity <= 100 and -100 <= angular_velocity <= 100, " drive: The velocities needs to be in the range -100 to 100"
-        assert isinstance(time_in_milli_second, int) or isinstance(time_in_milli_second,
-                                                                   float), " driveTime: Time should be an integer or float and the unit is milli seconds"
-        json = {"LinearVelocity": linear_velocity, "AngularVelocity": angular_velocity, "TimeMS": time_in_milli_second}
+        assert (
+            -100 <= linear_velocity <= 100 and -100 <= angular_velocity <= 100
+        ), " drive: The velocities needs to be in the range -100 to 100"
+        assert isinstance(time_in_milli_second, int) or isinstance(
+            time_in_milli_second, float
+        ), " driveTime: Time should be an integer or float and the unit is milli seconds"
+        json = {
+            "LinearVelocity": linear_velocity,
+            "AngularVelocity": angular_velocity,
+            "TimeMS": time_in_milli_second,
+        }
 
-        requests.post('http://' + self.ip + '/api/drive/time',
-                      json={"LinearVelocity": linear_velocity, "AngularVelocity": angular_velocity,
-                            "TimeMS": time_in_milli_second})
+        requests.post(
+            "http://" + self.ip + "/api/drive/time",
+            json={
+                "LinearVelocity": linear_velocity,
+                "AngularVelocity": angular_velocity,
+                "TimeMS": time_in_milli_second,
+            },
+        )
 
     def driveTrack(self, left_track_speed, right_track_speed):
-        assert -100 <= left_track_speed <= 100 and right_track_speed in -100 <= right_track_speed <= 100, " driveTrack: The velocities needs to be in the range -100 to 100"
-        requests.post('http://' + self.ip + '/api/drive/track',
-                      json={"LeftTrackSpeed": left_track_speed, "RightTrackSpeed": right_track_speed})
+        assert (
+            -100 <= left_track_speed <= 100
+            and right_track_speed in -100 <= right_track_speed <= 100
+        ), " driveTrack: The velocities needs to be in the range -100 to 100"
+        requests.post(
+            "http://" + self.ip + "/api/drive/track",
+            json={
+                "LeftTrackSpeed": left_track_speed,
+                "RightTrackSpeed": right_track_speed,
+            },
+        )
 
     def stop(self):
-        requests.post('http://' + self.ip + '/api/drive/stop')
+        requests.post("http://" + self.ip + "/api/drive/stop")
 
     def sendBackpack(self, message):
-        assert isinstance(message, str), " sendBackpack: Message sent to the Backpack should be a string"
-        requests.post('http://' + self.ip + '/api/serial', json={"Message": message})
+        assert isinstance(
+            message, str
+        ), " sendBackpack: Message sent to the Backpack should be a string"
+        requests.post("http://" + self.ip + "/api/serial", json={"Message": message})
 
     def populateImages(self):
         self.images_saved = []
-        resp = requests.get('http://' + self.ip + '/api/images/list')
+        resp = requests.get("http://" + self.ip + "/api/images/list")
         for out in resp.json()["result"]:
             self.images_saved.append(out["name"])
 
     def populateAudio(self):
         self.audio_saved = []
-        resp = requests.get('http://' + self.ip + '/api/audio/list')
+        resp = requests.get("http://" + self.ip + "/api/audio/list")
         try:
             for out in resp.json()["result"]:
                 self.audio_saved.append(out["name"])
@@ -165,7 +235,7 @@ class Robot:
 
     def populateLearnedFaces(self):
         self.faces_saved = []
-        resp = requests.get('http://' + self.ip + '/api/faces')
+        resp = requests.get("http://" + self.ip + "/api/faces")
         try:
             for out in resp.json()["result"]:
                 self.faces_saved.append(out)
@@ -188,10 +258,10 @@ class Robot:
         print(self.available_subscriptions)
 
     def startFaceRecognition(self):
-        requests.post('http://' + self.ip + '/api/faces/recognition/start')
+        requests.post("http://" + self.ip + "/api/faces/recognition/start")
 
     def stopFaceRecognition(self):
-        requests.post('http://' + self.ip + '/api/faces/recognition/stop')
+        requests.post("http://" + self.ip + "/api/faces/recognition/stop")
 
     def printLearnedFaces(self):
         print(self.faces_saved)
@@ -200,26 +270,37 @@ class Robot:
         return self.faces_saved
 
     def clearLearnedFaces(self):
-        requests.delete('http://' + self.ip + '/api/faces')
+        requests.delete("http://" + self.ip + "/api/faces")
         self.faces_saved = []
 
     def moveArm(self, arm, position, velocity, units="degrees"):
         arm = arm.lower()
         units = units.lower()
 
-        assert arm == "left" or arm == "right", "Invalid arm requested. Please use 'left' or 'right'"
-        assert units == "degrees" or units == "radians" or units == "position", "Invalid unit. Please use 'degrees', 'radians', or 'position'"
+        assert (
+            arm == "left" or arm == "right"
+        ), "Invalid arm requested. Please use 'left' or 'right'"
+        assert (
+            units == "degrees" or units == "radians" or units == "position"
+        ), "Invalid unit. Please use 'degrees', 'radians', or 'position'"
         assert 0 < velocity <= 100, "Velocity should be between 0 and 100"
 
-        if (units == "degrees"):
+        if units == "degrees":
             assert -90 < position <= 90, "Expected value -90< <=90"
-        elif (units == "radians"):
+        elif units == "radians":
             assert -1.5708 < position <= 1.5708, "Expected value -1.5708< <=1.5708"
         else:
             assert 0 <= position <= 10, "Expected value 0 <= >= 10"
 
-        requests.post('http://' + self.ip + '/api/arms',
-                      json={"Arm": arm, "Position": position, "Velocity": velocity, "Units": units})
+        requests.post(
+            "http://" + self.ip + "/api/arms",
+            json={
+                "Arm": arm,
+                "Position": position,
+                "Velocity": velocity,
+                "Units": units,
+            },
+        )
 
     def moveArmDegrees(self, arm, position, velocity):
         self.moveArm(arm, position, velocity, "degrees")
@@ -230,35 +311,86 @@ class Robot:
     def moveArmRadians(self, arm, position, velocity):
         self.moveArm(arm, position, velocity, "radians")
 
-    def moveArms(self, rightArmPosition, leftArmPosition, rightArmVelocity, leftArmVelocity, units="degrees"):
+    def moveArms(
+        self,
+        rightArmPosition,
+        leftArmPosition,
+        rightArmVelocity,
+        leftArmVelocity,
+        units="degrees",
+    ):
         units = units.lower()
 
-        assert units == "degrees" or units == "radians" or units == "position", "Invalid unit. Please use 'degrees', 'radians', or 'position'"
-        assert 0 < rightArmVelocity <= 100 and 0 < leftArmVelocity <= 100, "Velocity should be between 0 and 100"
+        assert (
+            units == "degrees" or units == "radians" or units == "position"
+        ), "Invalid unit. Please use 'degrees', 'radians', or 'position'"
+        assert (
+            0 < rightArmVelocity <= 100 and 0 < leftArmVelocity <= 100
+        ), "Velocity should be between 0 and 100"
 
-        if (units == "degrees"):
-            assert -90 < rightArmPosition <= 90 and -90 < leftArmPosition <= 90, "Expected value -90< <=90"
-        elif (units == "radians"):
-            assert -1.5708 < rightArmPosition <= 1.5708 and -1.5708 < leftArmPosition <= 1.5708, "Expected value -1.5708< <=1.5708"
+        if units == "degrees":
+            assert (
+                -90 < rightArmPosition <= 90 and -90 < leftArmPosition <= 90
+            ), "Expected value -90< <=90"
+        elif units == "radians":
+            assert (
+                -1.5708 < rightArmPosition <= 1.5708
+                and -1.5708 < leftArmPosition <= 1.5708
+            ), "Expected value -1.5708< <=1.5708"
         else:
-            assert 0 <= rightArmPosition <= 10 and 0 <= leftArmPosition <= 10, "Expected value 0 <= >= 10"
+            assert (
+                0 <= rightArmPosition <= 10 and 0 <= leftArmPosition <= 10
+            ), "Expected value 0 <= >= 10"
 
-        requests.post('http://' + self.ip + '/api/arms/set',
-                      json={"leftArmPosition": leftArmPosition, "rightArmPosition": rightArmPosition,
-                            "leftArmVelocity": leftArmVelocity, "rightArmVelocity": rightArmVelocity, "units": units})
+        requests.post(
+            "http://" + self.ip + "/api/arms/set",
+            json={
+                "leftArmPosition": leftArmPosition,
+                "rightArmPosition": rightArmPosition,
+                "leftArmVelocity": leftArmVelocity,
+                "rightArmVelocity": rightArmVelocity,
+                "units": units,
+            },
+        )
 
-    def moveArmsDegrees(self, rightArmPosition, leftArmPosition, rightArmVelocity, leftArmVelocity):
-        self.moveArms(rightArmPosition, leftArmPosition, rightArmVelocity, leftArmVelocity, "degrees")
+    def moveArmsDegrees(
+        self, rightArmPosition, leftArmPosition, rightArmVelocity, leftArmVelocity
+    ):
+        self.moveArms(
+            rightArmPosition,
+            leftArmPosition,
+            rightArmVelocity,
+            leftArmVelocity,
+            "degrees",
+        )
 
-    def moveArmsPosition(self, rightArmPosition, leftArmPosition, rightArmVelocity, leftArmVelocity):
-        self.moveArms(rightArmPosition, leftArmPosition, rightArmVelocity, leftArmVelocity, "position")
+    def moveArmsPosition(
+        self, rightArmPosition, leftArmPosition, rightArmVelocity, leftArmVelocity
+    ):
+        self.moveArms(
+            rightArmPosition,
+            leftArmPosition,
+            rightArmVelocity,
+            leftArmVelocity,
+            "position",
+        )
 
-    def moveArmsRadians(self, rightArmPosition, leftArmPosition, rightArmVelocity, leftArmVelocity):
-        self.moveArms(rightArmPosition, leftArmPosition, rightArmVelocity, leftArmVelocity, "radians")
+    def moveArmsRadians(
+        self, rightArmPosition, leftArmPosition, rightArmVelocity, leftArmVelocity
+    ):
+        self.moveArms(
+            rightArmPosition,
+            leftArmPosition,
+            rightArmVelocity,
+            leftArmVelocity,
+            "radians",
+        )
 
     def learnFace(self, name):
         assert isinstance(name, str), " trainFace: name must be a string"
-        requests.post('http://' + self.ip + '/api/faces/training/start', json={"FaceId": name})
+        requests.post(
+            "http://" + self.ip + "/api/faces/training/start", json={"FaceId": name}
+        )
         print("Please look at Misty's face for 15 seconds..")
         for i in range(15):
             print(15 - i)
@@ -282,18 +414,22 @@ class Robot:
                 return json.loads(data)
 
         else:
-            return " Backpack data is not subscribed, use the command robot_name.subscribe(\"SerialMessage\")"
+            return ' Backpack data is not subscribed, use the command robot_name.subscribe("SerialMessage")'
 
     def time_of_flight(self):
-        if self.time_of_flight_instance[0] is not None or self.time_of_flight_instance[1] is not None or \
-                self.time_of_flight_instance[2] is not None or self.time_of_flight_instance[3] is not None:
+        if (
+            self.time_of_flight_instance[0] is not None
+            or self.time_of_flight_instance[1] is not None
+            or self.time_of_flight_instance[2] is not None
+            or self.time_of_flight_instance[3] is not None
+        ):
 
             out = "{"
             for i in range(4):
                 try:
                     data_out = json.loads(self.time_of_flight_instance[i].data)
                     # print(data_out)
-                    out += "\"" + data_out["message"]["sensorPosition"] + "\"" + ":"
+                    out += '"' + data_out["message"]["sensorPosition"] + '"' + ":"
                     out += str(data_out["message"]["distanceInMeters"]) + ","
                 except:
                     return json.loads(self.time_of_flight_instance[i].data)
@@ -301,14 +437,21 @@ class Robot:
             out += "}"
             return json.loads(out)
         else:
-            return " TimeOfFlight not subscribed, use the command robot_name.subscribe(\"TimeOfFlight\")"
+            return ' TimeOfFlight not subscribed, use the command robot_name.subscribe("TimeOfFlight")'
 
     def faceRec(self):
         data = json.loads(self.face_recognition_instance.data)
         try:
-            out = "{ \"personName\" : \"" + data["message"]["personName"] + "\", \"distance\" : \"" + str(
-                data["message"]["distance"]) + "\", \"elevation\" :\"" + str(data["message"]["elevation"]) + "\"}"
-            return (json.loads(out))
+            out = (
+                '{ "personName" : "'
+                + data["message"]["personName"]
+                + '", "distance" : "'
+                + str(data["message"]["distance"])
+                + '", "elevation" :"'
+                + str(data["message"]["elevation"])
+                + '"}'
+            )
+            return json.loads(out)
         except:
             return json.loads(self.face_recognition_instance.data)
 
@@ -319,29 +462,44 @@ class Robot:
 
             if Type == "SerialMessage":
                 if self.backpack_instance is None:
-                    self.backpack_instance = Socket(self.ip, Type, _value=value, _debounce=debounce)
+                    self.backpack_instance = Socket(
+                        self.ip, Type, _value=value, _debounce=debounce
+                    )
                     time.sleep(1)
 
             elif Type == "TimeOfFlight":
                 if self.time_of_flight_instance[0] is None:
-                    self.time_of_flight_instance[0] = Socket(self.ip, Type, _value="Left", _debounce=debounce)
+                    self.time_of_flight_instance[0] = Socket(
+                        self.ip, Type, _value="Left", _debounce=debounce
+                    )
                     time.sleep(0.05)
-                    self.time_of_flight_instance[1] = Socket(self.ip, Type, _value="Center", _debounce=debounce)
+                    self.time_of_flight_instance[1] = Socket(
+                        self.ip, Type, _value="Center", _debounce=debounce
+                    )
                     time.sleep(0.05)
-                    self.time_of_flight_instance[2] = Socket(self.ip, Type, _value="Right", _debounce=debounce)
+                    self.time_of_flight_instance[2] = Socket(
+                        self.ip, Type, _value="Right", _debounce=debounce
+                    )
                     time.sleep(0.05)
-                    self.time_of_flight_instance[3] = Socket(self.ip, Type, _value="Back", _debounce=debounce)
+                    self.time_of_flight_instance[3] = Socket(
+                        self.ip, Type, _value="Back", _debounce=debounce
+                    )
                     time.sleep(1)
 
             elif Type == "FaceRecognition":
                 if self.face_recognition_instance is None:
                     self.startFaceRecognition()
                     print("FaceRecStarted")
-                    self.face_recognition_instance = Socket(self.ip, Type, _value="ComputerVision", _debounce=debounce)
+                    self.face_recognition_instance = Socket(
+                        self.ip, Type, _value="ComputerVision", _debounce=debounce
+                    )
 
         else:
-            print(" subscribe: Type name - ", Type,
-                  "is not recognized by the robot, use <robot_name>.printSubscriptionList() to see the list of possible Type names")
+            print(
+                " subscribe: Type name - ",
+                Type,
+                "is not recognized by the robot, use <robot_name>.printSubscriptionList() to see the list of possible Type names",
+            )
 
     def unsubscribe(self, Type):
         assert isinstance(Type, str), " unsubscribe: type name need to be string"
@@ -376,20 +534,22 @@ class Robot:
                     print("Unsubscribe:", Type, "is not subscribed")
 
         else:
-            print(" unsubscribe: Type name - ", Type,
-                  "is not recognised by the robot, use <robot_name>.printSubscriptionList() to see the list of possible Type names")
+            print(
+                " unsubscribe: Type name - ",
+                Type,
+                "is not recognised by the robot, use <robot_name>.printSubscriptionList() to see the list of possible Type names",
+            )
 
 
-# Every web socket is considered an instance     
+# Every web socket is considered an instance
 class Socket:
-
     def __init__(self, ip, Type, _value=None, _debounce=0):
 
         self.ip = ip
         self.Type = Type
         self.value = _value
         self.debounce = _debounce
-        self.data = "{\"status\":\"Not_Subscribed or just waiting for data\"}"
+        self.data = '{"status":"Not_Subscribed or just waiting for data"}'
         self.event_name = None
         self.ws = None
         self.initial_flag = True
@@ -399,8 +559,12 @@ class Socket:
 
     def initiate(self):
         websocket.enableTrace(True)
-        self.ws = websocket.WebSocketApp("ws://" + self.ip + "/pubsub", on_message=self.on_message,
-                                         on_error=self.on_error, on_close=self.on_close)
+        self.ws = websocket.WebSocketApp(
+            "ws://" + self.ip + "/pubsub",
+            on_message=self.on_message,
+            on_error=self.on_error,
+            on_close=self.on_close,
+        )
         self.ws.on_open = self.on_open
         self.ws.run_forever(ping_timeout=10)
 
@@ -415,7 +579,7 @@ class Socket:
 
     def on_close(self, ws):
         ws.send(str(self.get_unsubscribe_message(self.Type)))
-        self.data = "{\"status\":\"Not_Subscribed or just waiting for data\"}"
+        self.data = '{"status":"Not_Subscribed or just waiting for data"}'
         print("###", self.Type, " socket is closed ###")
 
     def on_open(self, ws):
@@ -439,7 +603,8 @@ class Socket:
                 "DebounceMs": self.debounce,
                 "EventName": self.event_name,
                 "Message": "",
-                "ReturnProperty": "SerialMessage"}
+                "ReturnProperty": "SerialMessage",
+            }
 
         elif Type == "TimeOfFlight":
 
@@ -451,12 +616,14 @@ class Socket:
                 "EventName": self.event_name,
                 "Message": "",
                 "ReturnProperty": "",
-                "EventConditions":
-                    [{
+                "EventConditions": [
+                    {
                         "Property": "SensorPosition",
                         "Inequality": "=",
-                        "Value": self.value
-                    }]}
+                        "Value": self.value,
+                    }
+                ],
+            }
 
         elif Type == "FaceRecognition":
 
@@ -466,7 +633,8 @@ class Socket:
                 "DebounceMs": self.debounce,
                 "EventName": self.event_name,
                 "Message": "",
-                "ReturnProperty": ""}
+                "ReturnProperty": "",
+            }
 
         return subscribeMsg
 
@@ -477,20 +645,23 @@ class Socket:
             unsubscribeMsg = {
                 "Operation": "unsubscribe",
                 "EventName": self.event_name,
-                "Message": ""}
+                "Message": "",
+            }
 
         elif Type == "TimeOfFlight":
 
             unsubscribeMsg = {
                 "Operation": "unsubscribe",
                 "EventName": self.event_name,
-                "Message": ""}
+                "Message": "",
+            }
 
         elif Type == "FaceRecognition":
 
             unsubscribeMsg = {
                 "Operation": "unsubscribe",
                 "EventName": self.event_name,
-                "Message": ""}
+                "Message": "",
+            }
 
         return unsubscribeMsg

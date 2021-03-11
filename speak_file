@@ -1,9 +1,0 @@
-<speak>
-  I can talk at different speeds.
-  <prosody rate=\"fast\">I can talk really fast</prosody>.
-  <prosody rate=\"x-slow\">Or I can talk really slow</prosody>.
-  I can talk at different volumes. 
-  This is the default volume.
-  <prosody volume=\"x-low\">I can whisper.</prosody>.
-  <prosody volume=\"x-loud\">Or I can yell!</prosody>
-</speak>
