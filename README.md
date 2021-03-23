@@ -18,9 +18,13 @@
 
 ## Usage
 
+1. Build the package with `catkin_make`
+2. Launch the core backend:
+
 ```
-roslaunch launch/misty_ros.launch ip:=<robot ip>
+roslaunch misty_ros misty_ros.launch ip:=<robot ip>
 ```
 
 ## ROS Topics
+
 `/drive`: Receives a `Float32` for the velocity and a `Float32` for the angular velocity, given in degrees/second

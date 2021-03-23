@@ -1,0 +1,5 @@
+float32 left_arm_position
+float32 left_arm_velocity
+float32 right_arm_position
+float32 right_arm_velocity
+string units

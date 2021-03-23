@@ -162,56 +162,6 @@ class Robot:
     def moveHeadDegrees(self, pitch, roll, yaw, velocity):
         self.moveHead(pitch, roll, yaw, velocity, "degrees")
 
-    def drive(self, linear_velocity, angular_velocity):
-        assert (
-            -100 <= linear_velocity <= 100 and -100 <= angular_velocity <= 100
-        ), " drive: The velocities needs to be in the range -100 to 100"
-        requests.post(
-            "http://" + self.ip + "/api/drive",
-            json={
-                "LinearVelocity": linear_velocity,
-                "AngularVelocity": angular_velocity,
-            },
-        )
-
-    def driveTime(self, linear_velocity, angular_velocity, time_in_milli_second):
-        assert (
-            -100 <= linear_velocity <= 100 and -100 <= angular_velocity <= 100
-        ), " drive: The velocities needs to be in the range -100 to 100"
-        assert isinstance(time_in_milli_second, int) or isinstance(
-            time_in_milli_second, float
-        ), " driveTime: Time should be an integer or float and the unit is milli seconds"
-        json = {
-            "LinearVelocity": linear_velocity,
-            "AngularVelocity": angular_velocity,
-            "TimeMS": time_in_milli_second,
-        }
-
-        requests.post(
-            "http://" + self.ip + "/api/drive/time",
-            json={
-                "LinearVelocity": linear_velocity,
-                "AngularVelocity": angular_velocity,
-                "TimeMS": time_in_milli_second,
-            },
-        )
-
-    def driveTrack(self, left_track_speed, right_track_speed):
-        assert (
-            -100 <= left_track_speed <= 100
-            and right_track_speed in -100 <= right_track_speed <= 100
-        ), " driveTrack: The velocities needs to be in the range -100 to 100"
-        requests.post(
-            "http://" + self.ip + "/api/drive/track",
-            json={
-                "LeftTrackSpeed": left_track_speed,
-                "RightTrackSpeed": right_track_speed,
-            },
-        )
-
-    def stop(self):
-        requests.post("http://" + self.ip + "/api/drive/stop")
-
     def sendBackpack(self, message):
         assert isinstance(
             message, str

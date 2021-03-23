@@ -19,9 +19,11 @@ find_package(catkin REQUIRED COMPONENTS
  add_message_files(
    FILES
    Drive.msg
-   DriveTime.msg
    DriveTrack.msg
    Color.msg
+   MoveArm.msg
+   MoveArms.msg
+   MoveHead.msg
  )
 
 ## Generate services in the 'srv' folder
