@@ -8,7 +8,7 @@ def ping_ip(ip, timeout):
 
     Returns True if the IP is up within that duration
     """
-    ping_cmd = "ping -c 1 -w .1".split(" ")
+    ping_cmd = "ping -c 1 -w 1".split(" ")
     ping_cmd.append(ip)
     start_time = time.time()
 
@@ -38,4 +38,7 @@ def ros_msg_to_json(msg):
 
 
 def post(ip, endpoint, json):
-    requests.post("http://" + ip + "/api/" + endpoint, json=json)
+    return requests.post("http://" + ip + "/api/" + endpoint, json=json)
+
+def get(ip, endpoint, json):
+    return requests.get("http://" + ip + "/api/" + endpoint, json=json)

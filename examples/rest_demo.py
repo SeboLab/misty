@@ -23,9 +23,9 @@ print(requests.get(url + "/images/list").json())
 
 print(requests.post(url + "/services/audio/enable").json())
 
-with open("speak", "r") as file:
-    data = file.read().replace("\n", "")
-    print(requests.post(url + "/tts/speak", json=json.dumps({"text": data})).json())
+#with open("speak", "r") as file:
+    #data = file.read().replace("\n", "")
+    #print(requests.post(url + "/tts/speak", json=json.dumps({"text": data})).json())
 
 print(requests.post(url + "/services/camera/enable").json())
 

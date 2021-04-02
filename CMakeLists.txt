@@ -20,10 +20,15 @@ find_package(catkin REQUIRED COMPONENTS
    FILES
    Drive.msg
    DriveTrack.msg
-   Color.msg
    MoveArm.msg
    MoveArms.msg
    MoveHead.msg
+
+   Color.msg
+   DisplayImage.msg
+   DisplayVideo.msg
+   PlayAudio.msg
+
  )
 
 ## Generate services in the 'srv' folder
@@ -69,4 +74,3 @@ include_directories(
 # include
  ${catkin_INCLUDE_DIRS}
 )
-

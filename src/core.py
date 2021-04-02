@@ -6,6 +6,7 @@ import rospy
 
 import util
 from movement import Movement
+from expression import Expression
 
 
 class MistyCore:
@@ -20,6 +21,7 @@ class MistyCore:
             sys.exit(1)
 
         self.movement_control = Movement(self.ip)
+        self.expression_control = Expression(self.ip)
 
         # self.change_led_sub = Subscriber("/display/led", Color, self.change_led)
         # self.change_image_sub = Subscriber(
