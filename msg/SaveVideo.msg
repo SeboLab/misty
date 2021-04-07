@@ -1,0 +1,4 @@
+string file_name
+string data
+bool immediately_apply
+bool overwrite_existing

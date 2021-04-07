@@ -1,0 +1,4 @@
+bool require_key_phrase
+bool overwrite_existing
+int max_speech_length
+int silence_timeout
