@@ -1,20 +1,23 @@
 from rospy import Subscriber, Publisher
 from std_msgs.msg import Bool, String, Empty
 from util import post, get, ros_msg_to_json, json_to_ros_msg
-from misty_ros.msg import CaptureSpeech, VideoRecording, RecordVideo, TakePicture
+from misty_ros.msg import (
+    CaptureSpeech,
+    VideoRecording,
+    RecordVideo,
+    TakePicture,
+    AssetRequest,
+)
 
 
 class Perception:
     def __init__(self, robot_ip):
         self.ip = robot_ip
-        self.base64 = True
-
-        Subscriber("/set/file_name", String, self.set_file_name)
-        Subscriber("/set/base64", Bool, self.set_base64)
 
         Subscriber("/audio/speech/capture", CaptureSpeech, self.capture_speech)
 
-        self.video_pub = Publisher("/videos/recordings", VideoRecording)
+        Subscriber("/videos/recordings/get", AssetRequest, self.get_video_recording)
+        self.video_pub = Publisher("/videos/recordings/get/results", VideoRecording)
         self.video_list_pub = Publisher("/videos/recordings/list")
 
         Subscriber("/audio/record/start", String, self.start_recording_audio)
@@ -32,13 +35,13 @@ class Perception:
     def capture_speech(self, params):
         post(self.ip, "audio/speech/capture", ros_msg_to_json(params))
 
-    def publish(self):
+    def get_video_recording(self, params):
         self.video_pub.publish(
             json_to_ros_msg(
                 get(
                     self.ip,
                     "videos/recordings",
-                    {"Name": self.file_name, "Base64": self.base64},
+                    {"Name": params.file_name, "Base64": params.base64},
                 )
             )
         )

@@ -46,8 +46,11 @@ def json_to_ros_msg(json_obj):
     return msg
 
 
-def post(ip, endpoint, json):
-    return requests.post("http://" + ip + "/api/" + endpoint, json=json)
+def post(ip, endpoint, json=None):
+    if json is None:
+        return requests.post("http://" + ip + "/api/" + endpoint)
+    else:
+        return requests.post("http://" + ip + "/api/" + endpoint, json=json)
 
 
 def get(ip, endpoint, json=None):

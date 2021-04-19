@@ -17,7 +17,9 @@ class Expression:
         Subscriber("/videos/display", DisplayVideo, self.display_video)
         Subscriber("/webviews/display", String, self.display_web_view)
         Subscriber("/audio/pause", Bool, self.pause_audio)
+        Subscriber("/audio/stop", Bool, self.stop_audio)
         Subscriber("/audio/play", PlayAudio, self.play_audio)
+        Subscriber("/blink", Bool, self.set_blinking)
         Subscriber("/flashlight", Bool, self.set_flashlight)
         Subscriber("/tts/speak", String, self.speak)
 
@@ -55,8 +57,15 @@ class Expression:
     def pause_audio(self, params):
         post(self.ip, "audio/pause")
 
+    def stop_audio(self, params):
+        post(self.ip, "audio/stop")
+        post(self.ip, "tts/stop")
+
     def play_audio(self, params):
         post(self.ip, "audio/play", ros_msg_to_json(params))
+
+    def set_blinking(self, params):
+        post(self.ip, "blink", {"Blink": params.data})
 
     def set_flashlight(self, params):
         post(self.ip, "flashlight", {"On": params.data})

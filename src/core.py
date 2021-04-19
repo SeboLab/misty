@@ -7,6 +7,7 @@ import rospy
 import util
 from movement import Movement
 from expression import Expression
+from asset import Asset
 
 
 class MistyCore:
@@ -22,22 +23,7 @@ class MistyCore:
 
         self.movement_control = Movement(self.ip)
         self.expression_control = Expression(self.ip)
-
-        # self.change_led_sub = Subscriber("/display/led", Color, self.change_led)
-        # self.change_image_sub = Subscriber(
-        #     "/display/change_image", ImageName, self.change_image
-        # )
-
-        # self.play_audio_sub = Subscriber(
-        #     "/audio/change_audio", FileName, self.play_audio
-        # )
-        # self.upload_audio_sub = Subscriber(
-        #     "/audio/upload_audio", FileName, self.upload_audio
-        # )
-
-        # self.battery_sub = Subscriber(
-        #     "/info/battery",
-        # )
+        self.asset_control = Asset(self.ip)
 
 
 if __name__ == "__main__":
