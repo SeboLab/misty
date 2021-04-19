@@ -16,6 +16,12 @@ class Perception:
 
         Subscriber("/audio/speech/capture", CaptureSpeech, self.capture_speech)
 
+        # Takes in a rtmp or rtsp URL
+        Subscriber("/avstreaming/start", String, self.start_av_streaming)
+
+        Subscriber("/faces/detection/start", Empty, self.start_face_detection)
+        Subscriber("/faces/training/start", String, self.start_face_training)
+
         Subscriber("/videos/recordings/get", AssetRequest, self.get_video_recording)
         self.video_pub = Publisher("/videos/recordings/get/results", VideoRecording)
         self.video_list_pub = Publisher("/videos/recordings/list")
@@ -26,11 +32,14 @@ class Perception:
         Subscriber("/video/record/stop", Empty, self.stop_recording_video)
         Subscriber("/cameras/rgb", TakePicture, self.take_picture)
 
-    def set_file_name(self, params):
-        self.file_name = params.data
+    def start_av_streaming(self, params):
+        post(self.ip, "avstreaming/start", {"URL": params.data})
 
-    def set_base64(self, params):
-        self.base64 = params.data
+    def start_face_detection(self, params):
+        post(self.ip, "faces/detection/start")
+
+    def start_face_training(self, params):
+        post(self.ip, "faces/training/start", {"FaceId": params.data})
 
     def capture_speech(self, params):
         post(self.ip, "audio/speech/capture", ros_msg_to_json(params))
