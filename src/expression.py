@@ -1,7 +1,8 @@
 from misty_ros.msg import Color, DisplayImage, DisplayVideo, PlayAudio
-from util import post, get, ros_msg_to_json
+from util import post, ros_msg_to_json
 from rospy import Subscriber
 from std_msgs.msg import Bool, String
+
 
 class Expression:
     def __init__(self, robot_ip):
@@ -10,9 +11,9 @@ class Expression:
 
         Subscriber("/layer", String, self.set_layer)
 
-        Subscriber("/led", Color, self.change_LED)
+        Subscriber("/led", Color, self.change_led)
         Subscriber("/images/display", DisplayImage, self.display_image)
-        Subscriber("/text/display", String, self. display_text)
+        Subscriber("/text/display", String, self.display_text)
         Subscriber("/videos/display", DisplayVideo, self.display_video)
         Subscriber("/webviews/display", String, self.display_web_view)
         Subscriber("/audio/pause", Bool, self.pause_audio)
@@ -23,9 +24,17 @@ class Expression:
     def set_layer(self, params):
         self.layer = params.data
 
-    def change_LED(self, params):
-        if params.red in range(0, 256) and params.blue in range(0, 256) and params.green in range(0, 256):
-            post(self.ip, "led", {"red": params.red, "green": params.green, "blue": params.blue})
+    def change_led(self, params):
+        if (
+            params.red in range(0, 256)
+            and params.blue in range(0, 256)
+            and params.green in range(0, 256)
+        ):
+            post(
+                self.ip,
+                "led",
+                {"red": params.red, "green": params.green, "blue": params.blue},
+            )
 
     def display_image(self, params):
         json = ros_msg_to_json(params)

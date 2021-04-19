@@ -1,14 +1,15 @@
-from rospy import Subscriber
+from rospy import Subscriber, Publisher
 from std_msgs.msg import Bool, String
-from misty_ros.msg import SaveAudio, SaveImage, SaveVideo, AudioFile
+from misty_ros.msg import SaveAudio, SaveImage, AudioFile, ImageFile, VideoFile
 
-from util import post, get, delete, ros_msg_to_json
+from util import get, delete, json_to_ros_msg
+
 
 class Asset:
     def __init__(self, robot_ip):
         self.ip = robot_ip
 
-        #TODO
+        # TODO
         Publisher("/audio/list")
         Publisher("/images/list")
         Publisher("/video/list")
@@ -27,11 +28,34 @@ class Asset:
         Subscriber("/audio/save", SaveAudio, self.save_audio)
         Subscriber("/images/save", SaveImage, self.save_image)
 
-
     def publish_files(self):
-        self.audio_pub.publish(json_to_ros_msg(get(ip, "audio", {"FileName": self.file_name, "Base64": self.base64}).json()))
-        self.image_pub.publish(json_to_ros_msg(get(ip, "image", {"FileName": self.file_name, "Base64": self.base64}).json()))
-        self.video_pub.publish(json_to_ros_msg(get(ip, "video", {"FileName": self.file_name, "Base64": self.base64}).json()))
+        self.audio_pub.publish(
+            json_to_ros_msg(
+                get(
+                    self.ip,
+                    "audio",
+                    {"FileName": self.file_name, "Base64": self.base64},
+                ).json()
+            )
+        )
+        self.image_pub.publish(
+            json_to_ros_msg(
+                get(
+                    self.ip,
+                    "image",
+                    {"FileName": self.file_name, "Base64": self.base64},
+                ).json()
+            )
+        )
+        self.video_pub.publish(
+            json_to_ros_msg(
+                get(
+                    self.ip,
+                    "video",
+                    {"FileName": self.file_name, "Base64": self.base64},
+                ).json()
+            )
+        )
 
     def set_file_name(self, params):
         self.file_name = params.data
@@ -40,19 +64,16 @@ class Asset:
         self.base64 = params.data
 
     def delete_audio(self, params):
-        delete(ip, "audio", {"FileName": params.data})
+        delete(self.ip, "audio", {"FileName": params.data})
 
     def delete_image(self, params):
-        delete(ip, "images", {"FileName": params.data})
+        delete(self.ip, "images", {"FileName": params.data})
 
     def delete_video(self, params):
-        delete(ip, "videos", {"FileName": params.data})
+        delete(self.ip, "videos", {"FileName": params.data})
 
     def save_audio(self, params):
+        pass
 
     def save_image(self, params):
-
-
-
-
-
+        pass

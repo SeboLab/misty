@@ -44,7 +44,7 @@ try:
     import thread
 except ImportError:
     import _thread as thread
-from random import *
+from random import randint
 
 
 class Robot:

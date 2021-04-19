@@ -1,6 +1,8 @@
+import re
 import time
-import requests
 import subprocess as sp
+
+import requests
 
 
 def ping_ip(ip, timeout):
@@ -36,18 +38,21 @@ def ros_msg_to_json(msg):
         json[camel_case_field] = getattr(msg, field)
     return json
 
-def json_to_ros_msg(dict):
+
+def json_to_ros_msg(json_obj):
     msg = {}
-    for attr in dir(dict):
-        msg[re.sub( '(?<!^)(?=[A-Z])', '_', attr).lower()] = dict[attr]
+    for attr in dir(json_obj):
+        msg[re.sub("(?<!^)(?=[A-Z])", "_", attr).lower()] = dict[attr]
     return msg
 
 
 def post(ip, endpoint, json):
     return requests.post("http://" + ip + "/api/" + endpoint, json=json)
 
+
 def get(ip, endpoint, json):
     return requests.get("http://" + ip + "/api/" + endpoint, json=json)
+
 
 def delete(ip, endpoint, json):
     return requests.delete("http://" + ip + "/api/" + endpoint, json=json)

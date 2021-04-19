@@ -1,11 +1,12 @@
-from misty_ros.msg import CaptureSpeech, VideoRecording
-from util import post, get, ros_msg_to_json, json_to_ros_msg
 from rospy import Subscriber, Publisher
 from std_msgs.msg import Bool, String, Empty
+from util import post, get, ros_msg_to_json, json_to_ros_msg
+from misty_ros.msg import CaptureSpeech, VideoRecording, RecordVideo, TakePicture
+
 
 class Perception:
     def __init__(self, robot_ip):
-        self.ip = robot.ip
+        self.ip = robot_ip
         self.base64 = True
 
         Subscriber("/set/file_name", String, self.set_file_name)
@@ -29,22 +30,30 @@ class Perception:
         self.base64 = params.data
 
     def capture_speech(self, params):
-        post(ip, "audio/speech/capture", ros_msg_to_json(params))
+        post(self.ip, "audio/speech/capture", ros_msg_to_json(params))
 
     def publish(self):
-        self.video_pub.publish(json_to_ros_msg(get(ip, "videos/recordings", {"Name": self.file_name, "Base64": self.base64})))
+        self.video_pub.publish(
+            json_to_ros_msg(
+                get(
+                    self.ip,
+                    "videos/recordings",
+                    {"Name": self.file_name, "Base64": self.base64},
+                )
+            )
+        )
 
     def start_recording_audio(self, params):
-        post(ip, "audio/record/start", {"FileName": params.data})
+        post(self.ip, "audio/record/start", {"FileName": params.data})
 
     def start_recording_video(self, params):
-        post(ip, "video/record/start", ros_msg_to_json(params))
+        post(self.ip, "video/record/start", ros_msg_to_json(params))
 
     def stop_recording_audio(self, params):
-        post(ip, "audio/record/stop", {})
+        post(self.ip, "audio/record/stop", {})
 
     def stop_recording_video(self, params):
-        post(ip, "video/record/stop", {})
+        post(self.ip, "video/record/stop", {})
 
     def take_picture(self, params):
-        get(ip, "cameras/rgb", ros_msg_to_json(params))
+        get(self.ip, "cameras/rgb", ros_msg_to_json(params))
