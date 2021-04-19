@@ -1,5 +1,5 @@
 from rospy import Subscriber, Publisher
-from std_msgs.msg import Bool, String, Empty
+from std_msgs.msg import Bool, String, Empty, StringArray
 from util import post, get, ros_msg_to_json, json_to_ros_msg
 from misty_ros.msg import (
     CaptureSpeech,
@@ -23,8 +23,9 @@ class Perception:
         Subscriber("/faces/training/start", String, self.start_face_training)
 
         Subscriber("/videos/recordings/get", AssetRequest, self.get_video_recording)
+        Subscriber("/videos/recordings/list/get", Empty, self.get_video_list)
         self.video_pub = Publisher("/videos/recordings/get/results", VideoRecording)
-        self.video_list_pub = Publisher("/videos/recordings/list")
+        self.video_list_pub = Publisher("/videos/recordings/list", StringArray)
 
         Subscriber("/audio/record/start", String, self.start_recording_audio)
         Subscriber("/video/record/start", RecordVideo, self.start_recording_video)
@@ -54,6 +55,9 @@ class Perception:
                 )
             )
         )
+
+    def get_video_list(self, params):
+        self.video_list_pub.publish(get(self.ip, "videos/recordings/list", {}))
 
     def start_recording_audio(self, params):
         post(self.ip, "audio/record/start", {"FileName": params.data})
