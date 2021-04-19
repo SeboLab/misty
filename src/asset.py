@@ -1,8 +1,15 @@
 from rospy import Subscriber, Publisher
-from std_msgs.msg import Bool, String
-from misty_ros.msg import SaveAudio, SaveImage, AudioFile, ImageFile, VideoFile
+from std_msgs.msg import String
+from misty_ros.msg import (
+    SaveAudio,
+    SaveImage,
+    AudioFile,
+    ImageFile,
+    VideoFile,
+    AssetRequest,
+)
 
-from util import get, delete, json_to_ros_msg
+from util import get, delete, json_to_ros_msg, ros_msg_to_json
 
 
 class Asset:
@@ -14,12 +21,13 @@ class Asset:
         Publisher("/images/list")
         Publisher("/video/list")
 
-        self.audio_pub = Publisher("/audio/get", AudioFile)
-        self.image_pub = Publisher("/images/get", ImageFile)
-        self.video_pub = Publisher("/videos/get", VideoFile)
+        self.audio_pub = Publisher("/audio/get/results", AudioFile)
+        self.image_pub = Publisher("/images/get/results", ImageFile)
+        self.video_pub = Publisher("/videos/get/results", VideoFile)
 
-        Subscriber("/set/file_name", String, self.set_file_name)
-        Subscriber("/set/base64", Bool, self.set_base64)
+        Subscriber("/audio/get", AssetRequest, self.get_audio_file)
+        Subscriber("/images/get", AssetRequest, self.get_image)
+        Subscriber("/videos/get", AssetRequest, self.get_video)
 
         Subscriber("/audio/delete", String, self.delete_audio)
         Subscriber("/images/delete", String, self.delete_image)
@@ -28,40 +36,23 @@ class Asset:
         Subscriber("/audio/save", SaveAudio, self.save_audio)
         Subscriber("/images/save", SaveImage, self.save_image)
 
-    def publish_files(self):
-        self.audio_pub.publish(
-            json_to_ros_msg(
-                get(
-                    self.ip,
-                    "audio",
-                    {"FileName": self.file_name, "Base64": self.base64},
-                ).json()
-            )
-        )
-        self.image_pub.publish(
-            json_to_ros_msg(
-                get(
-                    self.ip,
-                    "image",
-                    {"FileName": self.file_name, "Base64": self.base64},
-                ).json()
-            )
-        )
-        self.video_pub.publish(
-            json_to_ros_msg(
-                get(
-                    self.ip,
-                    "video",
-                    {"FileName": self.file_name, "Base64": self.base64},
-                ).json()
-            )
-        )
+    def get_audio_file(self, params):
+        result = get(
+            self.ip,
+            f"audio?FileName={params.file_name}&Base64={params.base64}",
+        ).json()
+        self.audio_pub.publish(json_to_ros_msg(result))
 
-    def set_file_name(self, params):
-        self.file_name = params.data
+    def get_image(self, params):
+        result = get(
+            self.ip,
+            f"images?FileName={params.file_name}&Base64={params.base64}",
+        ).json()
+        self.image_pub.publish(json_to_ros_msg(result))
 
-    def set_base64(self, params):
-        self.base64 = params.data
+    def get_video(self, params):
+        result = get(self.ip, "videos", json=ros_msg_to_json(params)).json()
+        self.video_pub.publish(json_to_ros_msg(result))
 
     def delete_audio(self, params):
         delete(self.ip, "audio", {"FileName": params.data})

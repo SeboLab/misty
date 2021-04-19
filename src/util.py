@@ -42,7 +42,7 @@ def ros_msg_to_json(msg):
 def json_to_ros_msg(json_obj):
     msg = {}
     for attr in dir(json_obj):
-        msg[re.sub("(?<!^)(?=[A-Z])", "_", attr).lower()] = dict[attr]
+        msg[re.sub("(?<!^)(?=[A-Z])", "_", attr).lower()] = json_obj[attr]
     return msg
 
 
@@ -50,8 +50,11 @@ def post(ip, endpoint, json):
     return requests.post("http://" + ip + "/api/" + endpoint, json=json)
 
 
-def get(ip, endpoint, json):
-    return requests.get("http://" + ip + "/api/" + endpoint, json=json)
+def get(ip, endpoint, json=None):
+    if json is None:
+        return requests.get("http://" + ip + "/api/" + endpoint)
+    else:
+        return requests.get("http://" + ip + "/api/" + endpoint, json=json)
 
 
 def delete(ip, endpoint, json):

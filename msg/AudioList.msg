@@ -1,1 +1,1 @@
-//is there a type for an array of strings?
+# is there a type for an array of strings?
