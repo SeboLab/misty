@@ -21,7 +21,6 @@ class Asset:
         Subscriber("/images/list/get", Empty, get_images_list)
         Subscriber("/video/list/get", Empty, get_video_list)
 
-        # TODO
         self.audio_list_pub = Publisher("/audio/list", StringArray)
         self.images_list_pub = Publisher("/images/list", StringArray)
         self.video_list_pub = Publisher("/video/list", StringArray)
