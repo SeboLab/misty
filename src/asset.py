@@ -1,5 +1,5 @@
 from rospy import Subscriber, Publisher
-from std_msgs.msg import String, StringArray
+from std_msgs.msg import String, UInt8, Empty
 from misty_ros.msg import (
     SaveAudio,
     SaveImage,
@@ -17,13 +17,13 @@ class Asset:
         self.ip = robot_ip
 
 
-        Subscriber("/audio/list/get", Empty, get_audio_list)
-        Subscriber("/images/list/get", Empty, get_images_list)
-        Subscriber("/video/list/get", Empty, get_video_list)
+        Subscriber("/audio/list/get", Empty, self.get_audio_list)
+        Subscriber("/images/list/get", Empty, self.get_images_list)
+        Subscriber("/video/list/get", Empty, self.get_video_list)
 
-        self.audio_list_pub = Publisher("/audio/list", StringArray)
-        self.images_list_pub = Publisher("/images/list", StringArray)
-        self.video_list_pub = Publisher("/video/list", StringArray)
+        self.audio_list_pub = Publisher("/audio/list", UInt8)
+        self.images_list_pub = Publisher("/images/list", UInt8)
+        self.video_list_pub = Publisher("/video/list", UInt8)
 
         self.audio_pub = Publisher("/audio/get/results", AudioFile)
         self.image_pub = Publisher("/images/get/results", ImageFile)

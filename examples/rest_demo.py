@@ -1,10 +1,9 @@
 import requests
 import json
 
-# Send post requests to make Misty act, and get requests to get information back
-# Use json in the post request, setting the data parameter doesn't work
-
 # Some example post and get requests
+# Set the json parameter in the post request, setting the data parameter doesn't work
+
 ip = "192.168.1.120"
 url = "http://" + ip + "/api"
 
@@ -23,10 +22,6 @@ print(requests.get(url + "/images/list").json())
 
 print(requests.post(url + "/services/audio/enable").json())
 
-#with open("speak", "r") as file:
-    #data = file.read().replace("\n", "")
-    #print(requests.post(url + "/tts/speak", json=json.dumps({"text": data})).json())
-
 print(requests.post(url + "/services/camera/enable").json())
 
 print(
@@ -44,7 +39,6 @@ print(
         ),
     ).json()
 )
-
 
 # Websocket example
 uri = "ws://" + ip + "/pubsub"

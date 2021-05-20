@@ -1,4 +1,4 @@
 bool require_key_phrase
 bool overwrite_existing
-int max_speech_length
-int silence_timeout
+int32 max_speech_length
+int32 silence_timeout

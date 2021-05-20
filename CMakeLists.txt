@@ -34,6 +34,7 @@ find_package(catkin REQUIRED COMPONENTS
    AudioFile.msg
    ImageFile.msg
    VideoFile.msg
+   CaptureSpeech.msg
  )
 
 ## Generate services in the 'srv' folder

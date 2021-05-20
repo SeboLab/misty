@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from misty_ros.msg import CaptureSpeech, AssetRequest, AudioFile
 import rospy
 
@@ -30,6 +32,6 @@ def translate_to_text(params):
         print("Transcript: {}".format(result.alternatives[0].transcript))
 
 if __name__ == "__main__":
-    rospy.init_node("misty_demo")
+    rospy.init_node("speech_to_text")
 
     main()

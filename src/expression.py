@@ -46,10 +46,11 @@ class Expression:
     def display_text(self, params):
         post(self.ip, "text/display", {"Text": params.data, "Layer": self.layer})
 
+    # Have been unable to get this to work
     def display_video(self, params):
         json = ros_msg_to_json(params)
         json["Layer"] = self.layer
-        post(self.ip, "videos/display", json)
+        print(post(self.ip, "videos/display", json).json())
 
     def display_web_view(self, params):
         post(self.ip, "webviews/display", {"URL": params.data, "Layer": self.layer})
