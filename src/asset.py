@@ -16,7 +16,7 @@ class Asset:
     def __init__(self, robot_ip):
         self.ip = robot_ip
 
-
+        
         Subscriber("/audio/list/get", Empty, self.get_audio_list)
         Subscriber("/images/list/get", Empty, self.get_images_list)
         Subscriber("/video/list/get", Empty, self.get_video_list)

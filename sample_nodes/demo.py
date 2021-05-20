@@ -28,15 +28,11 @@ def main():
     sleep(0.5)
 
     print("Executing commands")
-    # drive_pub.publish(20, 0, 1000)
+    drive_pub.publish(20, 0, 1000)
 
     layer_pub.publish("Base")
     blink_pub.publish(False);
     webview_display_pub.publish("https://www.google.com/")
-    video_display_pub.publish("https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_480_1_5MG.mp4", True)
-    # audio_get_pub.publish()
-
-
 
 if __name__ == "__main__":
     rospy.init_node("misty_demo")
