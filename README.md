@@ -8,9 +8,10 @@
 
 ## Usage
 
-1. Clone this repository into `/catkin_ws/src`
+1. Clone this repository into `~/catkin_ws/src`
+2. cd into the Catkin workspace: `cd ~/catkin_ws`
 2. Build the package with `catkin_make`
-3. ```source devel/setup.bash```
+3. `source devel/setup.bash`
 4. Launch the core backend:
 
 ```
@@ -18,22 +19,24 @@ roslaunch misty_ros misty_ros.launch ip:=<robot ip>
 ```
 
 5. Publish to ROS topics to control Misty. This can be done in a new command line window or using Python.
-   * Example in the command line: `rostopic pub /led /msg/color 255 0 255`
-   * Note: run ```source devel/setup.bash``` in the command line first
+
+   * Example in the command line: `rostopic pub /led misty_ros/Color 255 0 255`
+   * Note: run `source devel/setup.bash` in the command line first
+   * To see a list of all the topics, run `rostopic list`
+   * To see the type of a topic, run `rostopic type </topic/path>`
 
 ### Demo
 
-1. ```roslaunch misty_ros misty_ros_demo.launch```
-   * Note: May need to enable executable permission of Python file with
-```
-chmod +x demo.py
-```
+* ```roslaunch misty_ros misty_ros_demo.launch```
+
+   * Note: May need to enable executable permission of Python file with `chmod +x demo.py`
+
 
 ## ROS Topics
 
-* ROS topic paths are mostly the same as the endpoints in the REST API. See the [REST API Documentation](https://docs.mistyrobotics.com/misty-ii/rest-api/api-reference/) for the functionality of the ROS topics
+* ROS topic paths are mostly the same as the endpoints in the REST API. See the [REST API Documentation](https://docs.mistyrobotics.com/misty-ii/rest-api/api-reference/) for functionality.
 * There are some exceptions:
-   * `/layer` sets the layer on the screen to display things in the `src/expression.py`
+   * `/layer` sets the layer on the screen to display things in the Expression class
    * Getting data from the robot involves publishing a request in one topic and receiving the data in a separate topic
 * The files `src/asset.py`, `src/expression.py`, `src/movement.py`, and `src/perception.py` contain classes which initialize ROS topics
 * The core launch file is located in `launch/misty_ros.launch`. Launching this runs `src/core.py` which calls the classes in the other Python files

@@ -2,5 +2,5 @@
     <include file="$(find misty_ros)/launch/misty_ros.launch">
         <arg name="ip" default="192.168.1.120" doc="IP address for Misty"/>
     </include>
-    <node name="misty_demo" pkg="misty_ros" type="demo.py" output="screen"/>
+    <node name="misty_demo" pkg="misty_ros" type="demo.py"/>
 </launch>

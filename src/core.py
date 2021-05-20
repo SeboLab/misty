@@ -15,11 +15,11 @@ class MistyCore:
         self.rate = rospy.Rate(publish_rate)
         self.ip = ip
 
-        if not util.ping_ip(self.ip, timeout=1):
-            print("ERROR: Unable to establish a connection to Misty.")
-            print("Make sure your device is on the same network as Misty")
-
-            sys.exit(1)
+        # if not util.ping_ip(self.ip, timeout=1):
+        #     print("ERROR: Unable to establish a connection to Misty.")
+        #     print("Make sure your device is on the same network as Misty")
+        #
+        #     sys.exit(1)
 
         self.movement_control = Movement(self.ip)
         self.expression_control = Expression(self.ip)
