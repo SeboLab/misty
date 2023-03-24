@@ -8,7 +8,7 @@ from misty_ros.msg import (
     TakePicture,
     AssetRequest,
 )
-
+from time import sleep
 
 class Perception:
     def __init__(self, robot_ip):
@@ -34,7 +34,14 @@ class Perception:
         Subscriber("/cameras/rgb", TakePicture, self.take_picture)
 
     def start_av_streaming(self, params):
-        post(self.ip, "avstreaming/start", {"URL": params.data})
+        post(self.ip, "avstreaming/stop")
+        sleep(3)
+        post(self.ip, "services/avstreaming/enable")
+        sleep(3)
+        post(self.ip, "avstreaming/start", {"URL": params.data, "Width": 640, 
+                                            "Height": 480, "VideoBitRate": 1000000,
+                                            "AudioBitRate": 32000})
+        
 
     def start_face_detection(self, params):
         post(self.ip, "faces/detection/start")

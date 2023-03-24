@@ -21,13 +21,13 @@ class Asset:
         Subscriber("/images/list/get", Empty, self.get_images_list)
         Subscriber("/video/list/get", Empty, self.get_video_list)
 
-        self.audio_list_pub = Publisher("/audio/list", UInt8)
-        self.images_list_pub = Publisher("/images/list", UInt8)
-        self.video_list_pub = Publisher("/video/list", UInt8)
+        self.audio_list_pub = Publisher("/audio/list", UInt8, queue_size=0)
+        self.images_list_pub = Publisher("/images/list", UInt8, queue_size=0)
+        self.video_list_pub = Publisher("/video/list", UInt8, queue_size=0)
 
-        self.audio_pub = Publisher("/audio/get/results", AudioFile)
-        self.image_pub = Publisher("/images/get/results", ImageFile)
-        self.video_pub = Publisher("/videos/get/results", VideoFile)
+        self.audio_pub = Publisher("/audio/get/results", AudioFile, queue_size=0)
+        self.image_pub = Publisher("/images/get/results", ImageFile, queue_size=0)
+        self.video_pub = Publisher("/videos/get/results", VideoFile, queue_size=0)
 
         Subscriber("/audio/get", AssetRequest, self.get_audio_file)
         Subscriber("/images/get", AssetRequest, self.get_image)
