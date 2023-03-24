@@ -35,12 +35,10 @@ class Perception:
 
     def start_av_streaming(self, params):
         post(self.ip, "avstreaming/stop")
-        sleep(3)
+        sleep(5)
         post(self.ip, "services/avstreaming/enable")
-        sleep(3)
-        post(self.ip, "avstreaming/start", {"URL": params.data, "Width": 640, 
-                                            "Height": 480, "VideoBitRate": 1000000,
-                                            "AudioBitRate": 32000})
+        sleep(8)
+        post(self.ip, "avstreaming/start", {"URL": params.data, "Width": 640, "Height": 480, "VideoBitRate": 1000000, "AudioBitRate": 32000})
         
 
     def start_face_detection(self, params):
