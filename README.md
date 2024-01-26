@@ -20,7 +20,9 @@ roslaunch misty_ros misty_ros.launch ip:=<robot ip>
 
 5. Publish to ROS topics to control Misty. This can be done in a new command line window or using Python.
 
-   * Example in the command line: `rostopic pub /led misty_ros/Color 255 0 255`
+   * Example in the command line:
+     * `rostopic pub /led misty_ros/Color 255 0 255`
+     * `rostopic pub /tts/speak std_msgs/String "Hello! I am Misty!"`
    * Note: run `source devel/setup.bash` in the command line first
    * To see a list of all the topics, run `rostopic list`
    * To see the type of a topic, run `rostopic type </topic/path>`
